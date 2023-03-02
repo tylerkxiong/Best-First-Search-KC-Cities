@@ -1,6 +1,5 @@
 import math
 
-
 class city:
 
   def __init__(self, name, coords):
