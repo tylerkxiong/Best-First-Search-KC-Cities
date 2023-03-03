@@ -1,5 +1,6 @@
 import math
 
+
 class city:
 
   def __init__(self, name, coords):
@@ -15,10 +16,8 @@ while line:
   line = fstream.readline()
 fstream.close()
 adjacencies = {}
-
 for cities in listAdjacencies:
   adjacencies.update({cities[0]: cities[1::]})
-
 myDict = {}
 for i in adjacencies:
   for c in adjacencies[i]:
@@ -40,9 +39,6 @@ myKeys = list(myDict.keys())
 myKeys.sort()
 sorted_dict = {i: myDict[i] for i in myKeys}
 adjacencies = sorted_dict
-for i in adjacencies:
-  print("%s %s" % (i, adjacencies[i]))
-
 listCoords = []
 fstream = open("coordinates.txt", 'r')
 line = fstream.readline()
@@ -50,7 +46,6 @@ while line:
   listCoords.append(line.replace(" \n", "").replace("\n", "").split(" "))
   line = fstream.readline()
 fstream.close()
-
 Coords = []
 for coord in listCoords:
   Coords.append(city(coord[0], [float(coord[1]), float(coord[2])]))
@@ -60,18 +55,33 @@ def second(elem):
   return elem[1]
 
 
-print("\n")
-
-
 def bfs(s, g):
   if s == g:
+    for i in range(len(close) - 1):
+      print("%s -> " % close[i], end='')
+    print(close[len(close) - 1])
+
+    y = input("Do you want to try again? (Y/N):")
+    if y == "Y":
+      close.clear()
+      open.clear()
+      start = ""
+      goal = ""
+      while start not in adjacencies.keys():
+        start = input("What is your starting city?\n->").replace(" ", "_")
+        if start not in adjacencies.keys():
+          print("Try Again")
+      close.append(start)
+      while goal not in adjacencies.keys():
+        goal = input("What is your goal city?\n->").replace(" ", "_")
+        if goal not in adjacencies.keys():
+          print("Try Again")
+      bfs(start, goal)
     return close
   for target in adjacencies.keys():
     if s in target:
-      # print("\n%s %s\n" % (target, adjacencies[target]))
       for coord in Coords:
         if g == coord.name:
-          # print("%s %s" % (coord.name, coord.coords))
           mainCoord = coord.coords
           for i in adjacencies[target]:
             for coord in Coords:
@@ -80,28 +90,34 @@ def bfs(s, g):
                 open.append([coord.name, distance])
                 if coord.name in close:
                   open.pop()
-                # print("%s %s %s" % (coord.name, coord.coords, distance))
-          open.sort(reverse=True, key=second)
-  print(s)
-  for i in open:
-    print("%s is %f away from %s" % (i[0], i[1], g))
-  print("\n")
 
+          open.sort(reverse=True, key=second)
+  print("\nCities Adjacent to {}:".format(s))
+  for i in range(0, len(open) - 1):
+    print("{:15} {:.5f}".format(open[i][0], open[i][1]))
+  print("{:15} {:.5f} Closest Adjacent City from {} to {}".format(
+    open[len(open) - 1][0], open[len(open) - 1][1], s, g))
+
+  print("")
   close.append(open.pop()[0])
-  if close[len(close) - 1] == s:
-    close.insert(len(close) - 1, g)
-    close.pop()
-    return print(
-      "%s had the closest distance to %s even through listed dependecies" %
-      (s, g))
   bfs(close[len(close) - 1], g)
 
 
+print("Cities [and their adjacent cities]:")
+for i in adjacencies:
+  print("{:15} {}".format(i, adjacencies[i]))
+print("")
+close = []
 open = []
-start = "Pratt"
+start = ""
+goal = ""
+while start not in adjacencies.keys():
+  start = input("What is your starting city?\n->").replace(" ", "_")
+  if start not in adjacencies.keys():
+    print("Try Again")
 close = [start]
-goal = "Abilene"
+while goal not in adjacencies.keys():
+  goal = input("What is your goal city?\n->").replace(" ", "_")
+  if start not in adjacencies.keys():
+    print("Try Again")
 bfs(start, goal)
-for i in range(len(close)-1):
-  print("%s -> " % close[i], end='')
-print(close[len(close)-1])
